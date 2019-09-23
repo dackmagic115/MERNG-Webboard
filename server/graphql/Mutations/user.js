@@ -84,7 +84,7 @@ UserTC.addResolver({
         id:MongoID
         email:String
         token:String
-        username:String,
+        username:String
         createAt:String
     }`,
     args:{

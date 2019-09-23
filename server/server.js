@@ -1,6 +1,7 @@
 const express = require('express')
 const grahpqlHTTP = require('express-graphql')
 const bodyparser = require('body-parser')
+const isAuth = require('./middleware/is-auth')
 const cors = require('cors')
 
 require('dotenv').config()
@@ -32,10 +33,16 @@ app.use(express.json({ extend : false }))
 
 app.use(bodyparser.json())
 
+app.use(isAuth)
+
 app.use('/graphql',grahpqlHTTP(req =>({
     schema:Graphql,
     rootValue:Graphql,
     graphiql:true,
+    context: {
+      auth : req.isAuth,
+      userId : req.userId
+    },
     customFormatErrorFn(err){
       if(!err.originalError){
         return err
