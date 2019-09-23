@@ -1,4 +1,4 @@
-import { schemaComposer } from 'graphql-compose'
+const { schemaComposer } = require( 'graphql-compose')
 
 const queries = require('./Queries')
 const mutation = require('./Mutations')

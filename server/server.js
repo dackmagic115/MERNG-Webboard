@@ -1,11 +1,42 @@
 const express = require('express')
-const connectDB = require('./config/db')
+const grahpqlHTTP = require('express-graphql')
+const bodyparser = require('body-parser')
+const cors = require('cors')
 
 require('dotenv').config()
+
+
+
+// import file
+const connectDB = require('./config/db')
+const Graphql = require('./graphql')
+
 
 const app = express()
 
 connectDB()
+
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept',
+      
+    );
+    next();
+  });
+
+app.use(cors())
+
+app.use(express.json({ extend : false }))
+
+app.use(bodyparser.json())
+
+app.use('/graphql',grahpqlHTTP(req =>({
+    schema:Graphql,
+    rootValue:Graphql,
+    graphiql:true
+})))
 
 
 app.get('/',(req,res) => res.send('GRAPHQL SERVER RUNNING'))
