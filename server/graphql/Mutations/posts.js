@@ -82,9 +82,122 @@ PostTC.addResolver({
     }
 })
 
+PostTC.addResolver({
+    name:'PostComment',
+    type:PostTC,
+    args:{
+        record:`input CommentInput{
+            postId : MongoID
+            body : String
+        }`
+    },
+    resolve: async ({args , context}) =>{
+        const { postId , body } = args.record
+        const { auth , userId } = context
+
+        if(!auth){
+            throw new Error('UnAuthenicated')
+        }
+
+        const post =  await Posts.findById({_id:postId})
+        if(post){
+            const user = await Users.findById({_id:userId}).select('-password')
+
+            post.comments.unshift({
+                body,
+                username:user.username,
+                createAt: new Date().toISOString()
+            })
+            await post.save()
+            return post
+        } else throw new Error('ไม่มีโพสต์ นี้อยู่')
+    }
+
+})
+
+PostTC.addResolver({
+    name:"DeleteComments",
+    type:PostTC,
+    args:{
+        record:`input DeleteComment{
+            commentId : MongoID
+            postId : MongoID
+        }`
+    },
+    resolve: async({args , context}) =>{
+        const { auth , userId } = context
+        const { postId , commentId } = args.record
+
+        if(!auth){
+            throw new Error('UnAuthenicated')
+        }
+        const post = await Posts.findById({_id : postId})
+        console.log(post)
+        const comment = await post.comments.find(comment => comment._id === commentId)
+
+        if(!comment) {
+            throw new Error('คุณยังไม่ได้คอมเม้นเลย')
+        }
+
+        const user = Users.findById({_id:userId})
+
+        const removeIndex = post.comments.map(comment => comment.username.toString().indexOf(user.username))
+
+        post.comments.splice(removeIndex,1)
+
+        await post.save()
+
+        return post
+    }
+})
+
+PostTC.addResolver({
+    name:"LikePost",
+    type:PostTC,
+    args:{
+        record:`input LikeComment{
+            postId : MongoID
+        }`
+    },
+    resolve: async({args , context}) =>{
+        const { auth , userId } = context
+        const { postId } = args.record
+
+        if(!auth){
+            throw new Error('UnAuthenicated')
+        }
+        const post =  await Posts.findById({_id:postId})
+        console.log(post)
+        const User = await Users.findById({_id:userId})
+        if(post){
+            if(post.Likes.find(like => like.username === User.username)){
+                console.log('ลบ like')
+                /// logic นี้ใช้ได้เฉพาะตอนมีน้อยๆ ถ้ามีเยอะน่าจะหานาน
+                post.Likes = post.Likes.filter(like => like.username !==  User.username)
+                console.log(post.Likes)
+            }else{
+
+                post.Likes.push({
+                    username:User.username,
+                    createAt: new Date().toISOString()
+                })
+            }
+            await post.save()
+            return post
+        } 
+        else throw new Error('ไม่มี โพสต์นี้อยู่')
+
+    }
+})
+
+
 const objpost = {
     PostCreate : PostTC.getResolver('PostCreate'),
-    PostDelete : PostTC.getResolver('DeletePost')
+    PostDelete : PostTC.getResolver('DeletePost'),
+    CommentPost : PostTC.getResolver('PostComment'),
+    CommentDelete : PostTC.getResolver('DeleteComments'),
+    LikePost : PostTC.getResolver('LikePost')
+
 }
 
 module.exports = objpost

@@ -53,8 +53,9 @@ UserTC.addResolver({
             throw error
         }
 
-        const matchUser = User.findOne({username: username})
+        const matchUser = await User.findOne({username : username})
         if(matchUser){
+            console.log(matchUser)
             const error = new Error('มี username นี้อยู่แล้ว')
             throw error
         }
