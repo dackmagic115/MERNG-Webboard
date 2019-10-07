@@ -6,12 +6,7 @@ const Posts = require('../Model/posts')
 
 PostTC.addResolver({
     name:'PostCreate',
-    type:`type PostInfo{
-        id:MongoID
-        body:String
-        createdAt: String
-        username: String
-    }`,
+    type:PostTC,
     args:{
         record:`input InputInfo{
             body:String
@@ -20,7 +15,7 @@ PostTC.addResolver({
     resolve: async ({ context , args }) =>{
         const { auth , userId } = context
         const { body } = args.record
-        console.log(userId)
+        console.log("Create")
 
         if(!auth){
             throw new Error('UnAuthenicated')
@@ -48,7 +43,7 @@ PostTC.addResolver({
 
         const post = await newPosts.save()
 
-        return { id: post._id , body:post.body , createdAt:post.createAt , username : post.username }
+        return post
     }
 })
 

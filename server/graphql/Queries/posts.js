@@ -38,6 +38,35 @@ PostTC.addResolver({
     }
 })
 
+
+// PostTC.addResolver({
+//     name:'Posts',
+//     type:[`type PostsInfo{
+//             body:String,
+//             username:String
+//             createAt:String
+//             comments:[
+//                 {
+//                     body:String,
+//                     username:String
+//                     createAt:String
+//                 }
+//             ]
+//             likeCount : String
+//             commentCount : String
+            
+//     }`],
+//     args:{
+
+//     },
+//     resolve : async () =>{
+//         const post = await Post.find()
+
+
+//     }
+// })
+
+
 const objpost = {
     postMany : PostTC.getResolver('findMany'),
     postById : PostTC.getResolver('findById'),
