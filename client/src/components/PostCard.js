@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 
 import { AuthContext } from '../context/auth'
 import LikeButton from '../components/LikeButton'
+import DeleteButton from '../components/DeleteButton'
+
 
 import { Card , Icon , Label , Image , Button } from 'semantic-ui-react'
 
@@ -43,16 +45,9 @@ const PostCard = ({post : {body , createdAt , _id , username , Likes , comments}
                         {comments.length}
                     </Label>
                 </Button>     
-                {user && user.username === username && (
-                    <Button 
-                        as="div"
-                        color="red"
-                        floated="right"
-                        onClick={() => console.log('Delete Post')}
-                    >
-                        <Icon name="trash" style={{margin:0}}/>
-                    </Button>
-                )}
+                {user && user.username === username && 
+                   <DeleteButton postId={_id} />
+                }
          </Card.Content>
         </Card>
     )
