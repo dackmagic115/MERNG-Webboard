@@ -15,10 +15,11 @@ const Home = () => {
 
     const { loading , data  } = useQuery(FETCH_POSTS)
 
+
     return (
         <Grid columns={3} divided>
             <Grid.Row className="page-title">
-              <h1>Recent posts</h1>
+              <h1>โพสต์</h1>
             </Grid.Row>
             <Grid.Row>
                 {user &&(

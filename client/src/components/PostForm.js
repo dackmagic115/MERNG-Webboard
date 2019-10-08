@@ -2,7 +2,7 @@ import React , {useState} from 'react'
 import gql from 'graphql-tag'
 import { useMutation } from '@apollo/react-hooks'
 
-import { Form  , Button } from 'semantic-ui-react'
+import { Form  , Button, Feed } from 'semantic-ui-react'
 
 import { FETCH_POSTS } from '../util/graphql'
 
@@ -14,24 +14,32 @@ const PostForm = () => {
         variables:{
             body : body
         },
-        update(proxy,result){
-           const data =   proxy.readQuery({
-                query : FETCH_POSTS
-            })
-            data.postMany = [result.data.PostCreate , ...data.postMany]
-            data.postMany.push(result.data.PostCreate)
-            proxy.writeQuery({query:FETCH_POSTS , data })
-            
+        refetchQueries:[{query : FETCH_POSTS}]
+,
+        update  (proxy, result)  {
+            const data = proxy.readQuery({
+              query: FETCH_POSTS
+            });            
+            proxy.writeQuery({
+              query: FETCH_POSTS,
+              data:[...data.postMany , result.data.PostCreate]
+            });
+
             setBody('')
-        }
-    })
+          },
+          refetchQueries:[{query : FETCH_POSTS}]
+        });
+
+        
+
 
     const onChange = (e) => {
         setBody(e.target.value)
     }
 
-    const onSubmit = () =>{
-        createPost()
+    const onSubmit = async () =>{
+       await  createPost()
+
     }
 
     return (
@@ -57,7 +65,7 @@ const POST_CREATE  = gql`
         PostCreate(record:{
             body:$body
         }){
-                   body
+            body
             username
             createAt
             user

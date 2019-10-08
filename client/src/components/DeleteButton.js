@@ -22,7 +22,9 @@ const DeleteButton = ({postId , callback}) => {
         },
         variables:{
             postId
-        }
+        },
+        refetchQueries:[{query : FETCH_POSTS}]
+
     })
     return (
         <>
