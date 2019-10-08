@@ -123,12 +123,15 @@ PostTC.addResolver({
         const { auth , userId } = context
         const { postId , commentId } = args.record
 
+        console.log('commentId : ' , commentId )
+
         if(!auth){
             throw new Error('UnAuthenicated')
         }
         const post = await Posts.findById({_id : postId})
         console.log(post)
-        const comment = await post.comments.find(comment => comment._id === commentId)
+        const comment = await post.comments.find(comment => comment.id === commentId)
+        console.log(comment)
 
         if(!comment) {
             throw new Error('คุณยังไม่ได้คอมเม้นเลย')
